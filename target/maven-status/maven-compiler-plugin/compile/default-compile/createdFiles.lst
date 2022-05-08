@@ -1,0 +1,5 @@
+com\zdk\starter\config\UpYunProperties.class
+com\zdk\starter\UpyunSpringBootStarterApplication.class
+com\zdk\starter\config\UpYunAutoConfigure.class
+com\zdk\starter\service\UpYunService.class
+META-INF\spring-configuration-metadata.json
