@@ -126,8 +126,7 @@ public class UpYunOssService {
      * @throws IOException
      */
     public Boolean deleteFile(String filePath) throws UpException, IOException {
-        //正确文件路径应该是bucketName(服务名称)/(文件夹名 如果有的话)/文件名
-        String deletePath = upYunProperties.getBucketName()+filePath;
-        return upYun.deleteFile(deletePath,null );
+        //正确文件路径应该是 (文件夹名 如果有的话)/文件名
+        return upYun.deleteFile(filePath,null );
     }
 }
