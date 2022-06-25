@@ -5,6 +5,6 @@ springboot starter encapsulated by Java SDK based on upyun
         <dependency>
             <groupId>io.github.hnistzdk</groupId>
             <artifactId>upyun-spring-boot-starter</artifactId>
-            <version>1.0.1</version>
+            <version>1.0.2</version>
         </dependency>
 ```
