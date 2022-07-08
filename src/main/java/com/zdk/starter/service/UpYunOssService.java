@@ -6,6 +6,7 @@ import com.upyun.Params;
 import com.upyun.Result;
 import com.upyun.UpException;
 import com.zdk.starter.properties.UpYunProperties;
+import com.zdk.starter.properties.UpYunUploadParamProperties;
 import com.zdk.starter.utils.UpYunUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -27,6 +28,9 @@ public class UpYunOssService {
 
     @Autowired
     private UpYunProperties upYunProperties;
+
+    @Autowired
+    private UpYunUploadParamProperties upYunUploadParamProperties;
 
     @Autowired
     private FormUploader uploader;
@@ -56,7 +60,7 @@ public class UpYunOssService {
         paramsMap.put(Params.SAVE_KEY, path);
         //添加同步上传作图参数 X_GMKERL_THUMB
         //限定图片宽度为 300px、锐化、压缩质量 80、存储为 png 格式（参数不区分先后顺序）
-        paramsMap.put(Params.X_GMKERL_THUMB, upYunProperties.getImageParam());
+        paramsMap.put(Params.X_GMKERL_THUMB, upYunUploadParamProperties.getImageParam());
         return uploader.upload(paramsMap, file);
     }
 

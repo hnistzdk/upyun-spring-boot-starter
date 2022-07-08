@@ -2,7 +2,9 @@ package com.zdk.starter.config;
 
 import com.UpYun;
 import com.upyun.*;
+import com.zdk.starter.properties.UpYunAuthProperties;
 import com.zdk.starter.properties.UpYunProperties;
+import com.zdk.starter.properties.UpYunUploadParamProperties;
 import com.zdk.starter.service.UpYunOssService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -18,13 +20,17 @@ import org.springframework.context.annotation.Configuration;
  * @date 2022/5/8 15:54
  */
 @Configuration
-@ConditionalOnClass(UpYunOssService.class)
-@EnableConfigurationProperties(UpYunProperties.class)
+@ConditionalOnProperty(prefix = "up-yun",value = "enable",havingValue = "true")
+@EnableConfigurationProperties(value = {UpYunProperties.class,UpYunAuthProperties.class, UpYunUploadParamProperties.class})
 public class UpYunAutoConfigure {
 
     @Autowired
-    private UpYunProperties upYunProperties;
+    private UpYunAuthProperties upYunAuthProperties;
 
+    /**
+     * 一些OSS操作的封装
+     * @return
+     */
     @Bean
     @ConditionalOnMissingBean
     @ConditionalOnProperty(prefix = "up-yun",value = "enable",havingValue = "true")
@@ -32,52 +38,64 @@ public class UpYunAutoConfigure {
         return new UpYunOssService();
     }
 
+    /**
+     * 表单上传Bean
+     * @return
+     */
     @Bean
     @ConditionalOnMissingBean
     @ConditionalOnProperty(prefix = "up-yun",value = "enable",havingValue = "true")
     public FormUploader formUploader(){
-        return new FormUploader(upYunProperties.getBucketName(), upYunProperties.getUserName(), upYunProperties.getPassword());
+        return new FormUploader(upYunAuthProperties.getBucketName(), upYunAuthProperties.getUserName(), upYunAuthProperties.getPassword());
     }
 
     @Bean
     @ConditionalOnMissingBean
     @ConditionalOnProperty(prefix = "up-yun",value = "enable",havingValue = "true")
     public UpYun upYun(){
-        return new UpYun(upYunProperties.getBucketName(), upYunProperties.getUserName(), upYunProperties.getPassword());
+        return new UpYun(upYunAuthProperties.getBucketName(), upYunAuthProperties.getUserName(), upYunAuthProperties.getPassword());
     }
 
     @Bean
     @ConditionalOnMissingBean
     @ConditionalOnProperty(prefix = "up-yun",value = "enable",havingValue = "true")
     public SerialUploader serialUploader() {
-        return new SerialUploader(upYunProperties.getBucketName(), upYunProperties.getUserName(), upYunProperties.getPassword());
+        return new SerialUploader(upYunAuthProperties.getBucketName(), upYunAuthProperties.getUserName(), upYunAuthProperties.getPassword());
     }
 
+    /**
+     * 并行上传Bean
+     * @return
+     */
     @Bean
     @ConditionalOnMissingBean
     @ConditionalOnProperty(prefix = "up-yun",value = "enable",havingValue = "true")
     public ParallelUploader parallelUploader() {
-        return new ParallelUploader(upYunProperties.getBucketName(), upYunProperties.getUserName(), upYunProperties.getPassword());
+        return new ParallelUploader(upYunAuthProperties.getBucketName(), upYunAuthProperties.getUserName(), upYunAuthProperties.getPassword());
     }
 
+    /**
+     * 媒体处理Bean
+     * @return
+     */
     @Bean
     @ConditionalOnMissingBean
     @ConditionalOnProperty(prefix = "up-yun",value = "enable",havingValue = "true")
     public MediaHandler mediaHandler() {
-        return new MediaHandler(upYunProperties.getBucketName(), upYunProperties.getUserName(), upYunProperties.getPassword());
+        return new MediaHandler(upYunAuthProperties.getBucketName(), upYunAuthProperties.getUserName(), upYunAuthProperties.getPassword());
     }
 
     @Bean
     @ConditionalOnMissingBean
     @ConditionalOnProperty(prefix = "up-yun",value = "enable",havingValue = "true")
     public ConvertHandler convertHandler() {
-        return new ConvertHandler(upYunProperties.getBucketName(), upYunProperties.getUserName(), upYunProperties.getPassword());
+        return new ConvertHandler(upYunAuthProperties.getBucketName(), upYunAuthProperties.getUserName(), upYunAuthProperties.getPassword());
     }
 
     @Bean
     @ConditionalOnMissingBean
     @ConditionalOnProperty(prefix = "up-yun",value = "enable",havingValue = "true")
     public JigsawHandler jigsawHandler() {
-        return new JigsawHandler(upYunProperties.getBucketName(), upYunProperties.getUserName(), upYunProperties.getPassword());
+        return new JigsawHandler(upYunAuthProperties.getBucketName(), upYunAuthProperties.getUserName(), upYunAuthProperties.getPassword());
     }
 }
