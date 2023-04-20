@@ -7,7 +7,6 @@ import com.upyun.Result;
 import com.upyun.UpException;
 import com.zdk.starter.properties.UpYunProperties;
 import com.zdk.starter.properties.UpYunUploadParamProperties;
-import com.zdk.starter.utils.UpYunUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
@@ -38,9 +37,6 @@ public class UpYunOssService {
     @Autowired
     private UpYun upYun;
 
-    @Autowired
-    private UpYunUtil upYunUtil;
-
     /**
      * 上传单个图片或文件
      * @param filename 文件名
@@ -51,17 +47,21 @@ public class UpYunOssService {
      * @throws SignatureException
      * @throws InvalidKeyException
      */
-    public Result uploadFile(String filename, String directory, byte[] file) throws NoSuchAlgorithmException, SignatureException, InvalidKeyException {
+    public Result uploadFile(String filename, String directory, byte[] file) {
         //初始化参数组 Map
         final Map<String, Object> paramsMap = new HashMap<>(4);
-        String path = upYunUtil.buildFilePath(filename, directory);
+        String path = directory+filename;
         //添加 SAVE_KEY 参数
         //filename为文件名(例如：12345.jpg)
         paramsMap.put(Params.SAVE_KEY, path);
         //添加同步上传作图参数 X_GMKERL_THUMB
         //限定图片宽度为 300px、锐化、压缩质量 80、存储为 png 格式（参数不区分先后顺序）
         paramsMap.put(Params.X_GMKERL_THUMB, upYunUploadParamProperties.getImageParam());
-        return uploader.upload(paramsMap, file);
+        try {
+            return uploader.upload(paramsMap, file);
+        } catch (NoSuchAlgorithmException | SignatureException | InvalidKeyException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -75,10 +75,14 @@ public class UpYunOssService {
      * @throws SignatureException
      * @throws InvalidKeyException
      */
-    public Result uploadFile(String filename, String directory, byte[] file,Map<String,Object> paramsMap) throws NoSuchAlgorithmException, SignatureException, InvalidKeyException {
-        String path = upYunUtil.buildFilePath(filename, directory);
+    public Result uploadFile(String filename, String directory, byte[] file,Map<String,Object> paramsMap) {
+        String path = directory+filename;
         paramsMap.put(Params.SAVE_KEY, path);
-        return uploader.upload(paramsMap, file);
+        try {
+            return uploader.upload(paramsMap, file);
+        } catch (NoSuchAlgorithmException | SignatureException | InvalidKeyException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -90,12 +94,17 @@ public class UpYunOssService {
      * @throws SignatureException
      * @throws InvalidKeyException
      */
-    public List<Result> uploadFiles(List<String> fileName,List<byte[]> fileList) throws NoSuchAlgorithmException, SignatureException, InvalidKeyException {
+    public List<Result> uploadFiles(List<String> fileName,List<byte[]> fileList) {
         List<Result> results = new ArrayList<>();
         for (int i = 0; i < fileList.size(); i++) {
             Map<String, Object> paramsMap = new HashMap<>(4);
-            paramsMap.put(Params.SAVE_KEY, upYunUtil.buildFilePath(fileName.get(i), null));
-            Result result = uploader.upload(paramsMap, fileList.get(i));
+            paramsMap.put(Params.SAVE_KEY, fileName);
+            Result result = null;
+            try {
+                result = uploader.upload(paramsMap, fileList.get(i));
+            } catch (NoSuchAlgorithmException | SignatureException | InvalidKeyException e) {
+                throw new RuntimeException(e);
+            }
             results.add(result);
         }
         return results;
@@ -109,14 +118,19 @@ public class UpYunOssService {
      * @throws SignatureException
      * @throws InvalidKeyException
      */
-    public List<Result> uploadFiles(Map<String,byte[]> fileMap) throws NoSuchAlgorithmException, SignatureException, InvalidKeyException {
+    public List<Result> uploadFiles(Map<String,byte[]> fileMap) {
         List<Result> results = new ArrayList<>();
         for (Map.Entry<String, byte[]> entry : fileMap.entrySet()) {
             String fileName = entry.getKey();
             byte[] file = entry.getValue();
             Map<String, Object> paramsMap = new HashMap<>(4);
-            paramsMap.put(Params.SAVE_KEY, upYunUtil.buildFilePath(fileName, null));
-            Result result = uploader.upload(paramsMap, file);
+            paramsMap.put(Params.SAVE_KEY, fileName);
+            Result result = null;
+            try {
+                result = uploader.upload(paramsMap, file);
+            } catch (NoSuchAlgorithmException | SignatureException | InvalidKeyException e) {
+                throw new RuntimeException(e);
+            }
             results.add(result);
         }
         return results;
@@ -129,8 +143,12 @@ public class UpYunOssService {
      * @throws UpException
      * @throws IOException
      */
-    public Boolean deleteFile(String filePath) throws UpException, IOException {
+    public Boolean deleteFile(String filePath) {
         //正确文件路径应该是 (文件夹名 如果有的话)/文件名
-        return upYun.deleteFile(filePath,null );
+        try {
+            return upYun.deleteFile(filePath,null );
+        } catch (IOException | UpException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

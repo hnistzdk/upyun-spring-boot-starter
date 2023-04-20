@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.github.hnistzdk </groupId>
     <artifactId>upyun-spring-boot-starter</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3.2</version>
     <name>upyun-spring-boot-starter</name>
     <url>https://github.com/hnistzdk/upyun-spring-boot-starter</url>
     <description>upyun-spring-boot-starter</description>
